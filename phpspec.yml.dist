@@ -1,0 +1,5 @@
+suites:
+    query_builder:
+        namespace: Zlikavac32\QueryBuilder
+        psr4_prefix: Zlikavac32\QueryBuilder
+formatter.name: dot

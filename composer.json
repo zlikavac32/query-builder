@@ -1,0 +1,39 @@
+{
+    "name": "zlikavac32/query-builder",
+    "description": "The SQL query builder library that never builds an SQL query from scratch, but rather modifies an existing query.",
+    "keywords": ["query", "query-builder", "sql", "mysql", "pdo"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marijan Šuflaj",
+            "email": "msufflaj32@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Zlikavac32\\QueryBuilder\\": "src/"
+        }
+    },
+    "autoload-dev":  {
+        "psr-4": {
+            "Zlikavac32\\QueryBuilder\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.4",
+        "ext-ffi": "*",
+        "zlikavac32/php-enum": "^2.0",
+        "php-ds/php-ds": "^1.2"
+    },
+    "require-dev": {
+        "ext-json": "*",
+        "doctrine/dbal": "^2.10",
+        "phpunit/phpunit": "^7.0",
+        "phpspec/phpspec": "^6.1"
+    },
+    "suggest": {
+        "ext-ds": "For better performance with php-ds"
+    }
+}
