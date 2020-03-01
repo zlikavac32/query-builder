@@ -1,0 +1,45 @@
+language: php
+
+os: linux
+dist: bionic
+
+cache:
+    directories:
+        - $HOME/.composer/cache
+
+install:
+    # @todo: how to have FFI in travis-ci?
+    - wget https://github.com/dstogov/php-ffi/archive/master.zip -O ffi.zip
+    - unzip ffi.zip
+    - cd php-ffi-master
+    - phpize
+    - ./configure
+    - make
+
+    - cd ../
+    - wget https://github.com/zlikavac32/sql-query-parser/archive/master.zip -O tsqlp.zip
+    - unzip tsqlp.zip
+    - cd sql-query-parser-master/build
+    - cmake .. -DCMAKE_BUILD_TYPE=Release
+    - make
+    - sudo make install
+    - cd ../../
+
+    - composer update $COMPOSER_FLAGS --ignore-platform-reqs
+
+jobs:
+    include:
+        -
+            php: 7.4
+        -
+            php: 7.4
+            env: COMPOSER_FLAGS='--prefer-lowest'
+        -
+            php: nightly
+            env: COMPOSER_FLAGS='--ignore-platform-reqs'
+    allow_failures:
+        - php: nightly
+
+script:
+    - php -d extension=php-ffi-master/modules/ffi.so vendor/bin/phpspec run
+    - php -d extension=php-ffi-master/modules/ffi.so vendor/bin/phpunit
