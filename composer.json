@@ -29,7 +29,6 @@
     },
     "require-dev": {
         "ext-json": "*",
-        "doctrine/dbal": "^2.10",
         "phpunit/phpunit": "^7.0",
         "phpspec/phpspec": "^6.1"
     },
