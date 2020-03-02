@@ -1,5 +1,7 @@
 # Query Builder
 
+[![Build Status](https://travis-ci.org/zlikavac32/query-builder.svg?branch=master)](https://travis-ci.org/zlikavac32/query-builder) [![Latest Stable Version](https://poser.pugx.org/zlikavac32/query-builder/v/stable)](https://packagist.org/packages/zlikavac32/query-builder) [![License](https://poser.pugx.org/zlikavac32/query-builder/license)](https://packagist.org/packages/zlikavac32/query-builder)
+
 The SQL query builder library that does not build an SQL query from scratch, but rather modifies an existing query. 
 
 ## Table of contents
