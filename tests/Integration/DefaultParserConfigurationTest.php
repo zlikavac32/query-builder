@@ -209,6 +209,20 @@ final class DefaultParserConfigurationTest extends TestCase
     /**
      * @test
      */
+    public function null_can_be_passed_as_parameter(): void
+    {
+        $query = $this->environment->queryBuilderFromString('SELECT ?', null)
+            ->build();
+
+        self::assertSame(
+            'SELECT ?', $query->sql()
+        );
+        self::assertSame([null], $query->parameters()->toArray());
+    }
+
+    /**
+     * @test
+     */
     public function to_few_parameters_provided_is_reported(): void
     {
         $this->expectException(QueryBuilderException::class);
