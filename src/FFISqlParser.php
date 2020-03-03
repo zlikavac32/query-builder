@@ -70,7 +70,7 @@ final class FFISqlParser implements Parser
                     $placeholdersLocations = $placeholders->locations;
 
                     for ($i = 0; $i < $placeholders->count; $i++) {
-                        if (!isset($parameters[$currentParameter])) {
+                        if (!array_key_exists($currentParameter, $parameters)) {
                             throw new QueryBuilderException('To few parameters provided');
                         }
 
