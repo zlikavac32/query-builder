@@ -25,4 +25,9 @@ final class SectionWithinParenthesis implements Section
     {
         return $this->section->markers()->map(fn(array $marker) => [$marker[0], $marker[1] + 1]);
     }
+
+    public function copy(): Section
+    {
+        return new SectionWithinParenthesis($this->section->copy());
+    }
 }

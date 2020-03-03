@@ -28,4 +28,9 @@ final class StaticSection implements Section
     {
         return $this->markers;
     }
+
+    public function copy(): Section
+    {
+        return $this;
+    }
 }

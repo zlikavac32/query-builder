@@ -47,4 +47,11 @@ final class SectionWithinParenthesisSpec extends ObjectBehavior
             ]
         );
     }
+
+    public function it_should_copy_itself(Section $section, Section $sectionCopy): void
+    {
+        $section->copy()->willReturn($sectionCopy);
+
+        $this->copy()->shouldBeLike(new SectionWithinParenthesis($sectionCopy->getWrappedObject()));
+    }
 }

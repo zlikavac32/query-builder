@@ -28,4 +28,9 @@ final class FFIParserSection implements Section
     {
         return $this->markers->map(fn(array $marker) => [$marker[1], $marker[0]]);
     }
+
+    public function copy(): Section
+    {
+        return $this;
+    }
 }

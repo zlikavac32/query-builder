@@ -9,6 +9,8 @@ use Ds\Sequence;
 interface Section
 {
 
+    public function copy(): Section;
+
     public function chunk(): string;
 
     /**

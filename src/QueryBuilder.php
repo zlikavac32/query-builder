@@ -33,5 +33,7 @@ interface QueryBuilder
 
     public function rightJoin(string $join, ...$parameters): QueryBuilder;
 
+    public function copy(): QueryBuilder;
+
     public function build(): Query;
 }

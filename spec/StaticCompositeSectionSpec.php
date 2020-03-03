@@ -82,4 +82,24 @@ final class StaticCompositeSectionSpec extends ObjectBehavior
             ]
         );
     }
+
+    public function it_should_copy_itself(
+        Section $firstSection, Section $secondSection, Section $firstSectionCopy, Section $thirdSection
+    ): void {
+        $firstSection->copy()->willReturn($firstSectionCopy);
+
+        $copy = $this->copy();
+
+        $this->append($secondSection, '-');
+        $copy->append($thirdSection, '+');
+
+        $firstSection->chunk()->willReturn('1');
+        $firstSectionCopy->chunk()->willReturn('2');
+
+        $secondSection->chunk()->willReturn('3');
+        $thirdSection->chunk()->willReturn('4');
+
+        $this->chunk()->shouldReturn('1-3');
+        $copy->chunk()->shouldReturn('2+4');
+    }
 }
