@@ -185,7 +185,8 @@ final class ParserBackedQueryBuilder implements QueryBuilder
     }
 
     private function doJoin(string $join, array $parameters, ?string $type = null
-    ): QueryBuilder {
+    ): QueryBuilder
+    {
         if ($this->shouldSkipParsing($join, $parameters)) {
             $section = new StaticSection(sprintf('  %s JOIN %s', (string) $type, $join));
         } else {
@@ -194,35 +195,7 @@ final class ParserBackedQueryBuilder implements QueryBuilder
                 StatementSection::TABLES()
             );
 
-            /*
-             * Instead of removing "t" from the "FROM" part and then adjusting all of the
-             * placeholders, "t" is just replaced by the white space
-             */
-            $section = new class($section) implements Section {
-
-                /**
-                 * @var Section
-                 */
-                private Section $section;
-
-                public function __construct(Section $section)
-                {
-                    $this->section = $section;
-                }
-
-                public function chunk(): string
-                {
-                    $chunk = $this->section->chunk();
-                    $chunk[0] = ' ';
-
-                    return $chunk;
-                }
-
-                public function markers(): Sequence
-                {
-                    return $this->section->markers();
-                }
-            };
+            $section = new ReplaceTWithSpaceSection($section);
         }
 
         $this->sectionMap->appendSectionTo(StatementSection::TABLES(), $section, '');
@@ -242,5 +215,47 @@ final class ParserBackedQueryBuilder implements QueryBuilder
             sprintf($format, ...$parts),
             $parameters
         )->sectionFor($component);
+    }
+
+    public function copy(): QueryBuilder
+    {
+        return new ParserBackedQueryBuilder($this->parser, $this->sectionMap->copy());
+    }
+}
+
+/**
+ * Instead of removing "t" from the "FROM" part and then adjusting all of the
+ * placeholders, "t" is just replaced by the white space
+ *
+ * @internal
+ */
+class ReplaceTWithSpaceSection implements Section {
+
+    /**
+     * @var Section
+     */
+    private Section $section;
+
+    public function __construct(Section $section)
+    {
+        $this->section = $section;
+    }
+
+    public function chunk(): string
+    {
+        $chunk = $this->section->chunk();
+        $chunk[0] = ' ';
+
+        return $chunk;
+    }
+
+    public function markers(): Sequence
+    {
+        return $this->section->markers();
+    }
+
+    public function copy(): Section
+    {
+        return new ReplaceTWithSpaceSection($this->section->copy());
     }
 }

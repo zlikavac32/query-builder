@@ -174,4 +174,15 @@ final class SectionMap
             throw new QueryBuilderException('No section provided yet');
         }
     }
+
+    public function copy(): SectionMap
+    {
+        $copy = new SectionMap();
+
+        foreach ($this->sections as $key => $value) {
+            $copy->sections->put($key, $value->copy());
+        }
+
+        return $copy;
+    }
 }

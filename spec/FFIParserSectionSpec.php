@@ -47,4 +47,10 @@ final class FFIParserSectionSpec extends ObjectBehavior
             ]
         );
     }
+
+    public function it_should_copy_itself(): void
+    {
+        $this->beConstructedWith('foo');
+        $this->copy()->shouldReturn($this);
+    }
 }

@@ -65,4 +65,13 @@ final class StaticCompositeSection implements CompositeSection
                 }, new Vector()
             );
     }
+
+    public function copy(): Section
+    {
+        $newSection = clone $this;
+        $newSection->sections =
+            $newSection->sections->map(fn($item) => $item instanceof Section ? $item->copy() : $item);
+
+        return $newSection;
+    }
 }

@@ -150,6 +150,19 @@ final class SectionMapSpec extends ObjectBehavior
         $this->hasSectionFor(StatementSection::TABLES())->shouldReturn(false);
     }
 
+    public function it_should_copy_itself(): void
+    {
+        $this->setSectionFor(StatementSection::COLUMNS(), new StaticSection('1'));
+
+        $copy = $this->copy();
+
+        $this->setSectionFor(StatementSection::TABLES(), new StaticSection('t1'));
+        $copy->setSectionFor(StatementSection::TABLES(), new StaticSection('t2'));
+
+        $this->shouldBuildSql('SELECT 1 FROM t1');
+        $copy->shouldBuildSql('SELECT 1 FROM t2');
+    }
+
     public function getMatchers(): array
     {
         return [

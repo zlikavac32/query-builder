@@ -325,4 +325,30 @@ SQL;
             $query->sql()
         );
     }
+
+    /**
+     * @test
+     */
+    public function query_builder_can_be_copied(): void
+    {
+        $qb = $this->environment->queryBuilderFromString('SELECT 1')
+                                ->where('a = 1');
+
+        $otherQb = $qb->copy();
+
+        $qb->andWhere('b = 1');
+        $otherQb->where('c = 1');
+
+        $query = $qb->build();
+        $otherQuery = $otherQb->build();
+
+        self::assertSame(
+            'SELECT 1 WHERE (a = 1) AND (b = 1)', $query->sql()
+        );
+        self::assertSame([], $query->parameters()->toArray());
+        self::assertSame(
+            'SELECT 1 WHERE c = 1', $otherQuery->sql()
+        );
+        self::assertSame([], $otherQuery->parameters()->toArray());
+    }
 }
