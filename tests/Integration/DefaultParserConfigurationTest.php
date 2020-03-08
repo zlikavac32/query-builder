@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Zlikavac32\QueryBuilder\Tests\Integration;
 
+use LogicException;
 use PHPUnit\Framework\TestCase;
 use Zlikavac32\QueryBuilder\FFIGateway;
 use Zlikavac32\QueryBuilder\FFIParserException;
 use Zlikavac32\QueryBuilder\FFISqlParser;
 use Zlikavac32\QueryBuilder\NonPreloadedFFIGateway;
+use Zlikavac32\QueryBuilder\Parser;
 use Zlikavac32\QueryBuilder\ParserBackedQueryEnvironment;
 use Zlikavac32\QueryBuilder\QueryBuilderException;
+use Zlikavac32\QueryBuilder\SectionMap;
+use Zlikavac32\QueryBuilder\StatementSection;
+use Zlikavac32\QueryBuilder\StaticSection;
 
 final class DefaultParserConfigurationTest extends TestCase
 {
@@ -274,5 +279,50 @@ SQL;
 
         self::assertSame($expectedSql, $query->sql());
         self::assertSame([1, 2, 7, 3, 6, 4, 5], $query->parameters()->toArray());
+    }
+
+    /**
+     * @test
+     */
+    public function parser_is_not_called_when_section_has_no_placeholders(): void
+    {
+        $environment = new ParserBackedQueryEnvironment(
+            new class implements Parser {
+
+                /**
+                 * @inheritDoc
+                 */
+                public function parse(string $content, array $parameters): SectionMap
+                {
+                    if ($content === 'SELECT 1') {
+                        $sectionMap = new SectionMap();
+                        $sectionMap->setSectionFor(StatementSection::COLUMNS(), new StaticSection('1'));
+                        return $sectionMap;
+                    }
+                    throw new LogicException('Should not be called');
+                }
+            }
+        );
+
+        $qb = $environment->queryBuilderFromString('SELECT 1');
+
+        $query = $qb->select('col')
+            ->join('t1 ON t1c1 = t1c2')
+            ->leftJoin('t2 ON t2c1 = t2c2')
+            ->rightJoin('t3 ON t3c1 = t3c2')
+            ->where('1')
+            ->andWhere('2')
+            ->groupBy('c1')
+            ->andGroupBy('c2')
+            ->having('3')
+            ->andHaving('4')
+            ->orderBy('c4')
+            ->andOrderBy('c5')
+            ->build();
+
+        self::assertSame(
+            'SELECT col FROM    JOIN t1 ON t1c1 = t1c2  LEFT JOIN t2 ON t2c1 = t2c2  RIGHT JOIN t3 ON t3c1 = t3c2 WHERE (1) AND (2) GROUP BY c1, c2 HAVING (3) AND (4) ORDER BY c4, c5',
+            $query->sql()
+        );
     }
 }

@@ -23,9 +23,9 @@ interface QueryBuilder
 
     public function andGroupBy(string $groupBy, ...$parameters): QueryBuilder;
 
-    public function orderBy(string $groupBy, ...$parameters): QueryBuilder;
+    public function orderBy(string $orderBy, ...$parameters): QueryBuilder;
 
-    public function andOrderBy(string $groupBy, ...$parameters): QueryBuilder;
+    public function andOrderBy(string $orderBy, ...$parameters): QueryBuilder;
 
     public function join(string $join, ...$parameters): QueryBuilder;
 

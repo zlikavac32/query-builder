@@ -18,11 +18,20 @@ final class ParserBackedQueryBuilder implements QueryBuilder
         $this->parser = $parser;
     }
 
+    private function shouldSkipParsing(string $section, array $parameters): bool {
+        $noPossiblePlaceholderExists = strpos($section, '?') === false;
+        return count($parameters) === 0 && $noPossiblePlaceholderExists;
+    }
+
     public function select(string $columns, ...$parameters): QueryBuilder
     {
-        $section = $this->resolveSection(
-            'SELECT %s', [$columns], $parameters, StatementSection::COLUMNS()
-        );
+        if ($this->shouldSkipParsing($columns, $parameters)) {
+            $section = new StaticSection($columns);
+        } else {
+            $section = $this->resolveSection(
+                'SELECT %s', [$columns], $parameters, StatementSection::COLUMNS()
+            );
+        }
 
         $this->sectionMap->setSectionFor(StatementSection::COLUMNS(), $section);
 
@@ -31,9 +40,13 @@ final class ParserBackedQueryBuilder implements QueryBuilder
 
     public function andWhere(string $condition, ...$parameters): QueryBuilder
     {
-        $section = $this->resolveSection(
-            'SELECT 1 WHERE %s', [$condition], $parameters, StatementSection::WHERE()
-        );
+        if ($this->shouldSkipParsing($condition, $parameters)) {
+            $section = new StaticSection($condition);
+        } else {
+            $section = $this->resolveSection(
+                'SELECT 1 WHERE %s', [$condition], $parameters, StatementSection::WHERE()
+            );
+        }
 
         $this->sectionMap->appendSectionTo(StatementSection::WHERE(), new SectionWithinParenthesis($section), ' AND ');
 
@@ -42,9 +55,13 @@ final class ParserBackedQueryBuilder implements QueryBuilder
 
     public function where(string $condition, ...$parameters): QueryBuilder
     {
-        $section = $this->resolveSection(
-            'SELECT 1 WHERE %s', [$condition], $parameters, StatementSection::WHERE()
-        );
+        if ($this->shouldSkipParsing($condition, $parameters)) {
+            $section = new StaticSection($condition);
+        } else {
+            $section = $this->resolveSection(
+                'SELECT 1 WHERE %s', [$condition], $parameters, StatementSection::WHERE()
+            );
+        }
 
         $this->sectionMap->setSectionFor(StatementSection::WHERE(), $section);
 
@@ -53,9 +70,13 @@ final class ParserBackedQueryBuilder implements QueryBuilder
 
     public function andHaving(string $condition, ...$parameters): QueryBuilder
     {
-        $section = $this->resolveSection(
-            'SELECT 1 HAVING %s', [$condition], $parameters, StatementSection::HAVING()
-        );
+        if ($this->shouldSkipParsing($condition, $parameters)) {
+            $section = new StaticSection($condition);
+        } else {
+            $section = $this->resolveSection(
+                'SELECT 1 HAVING %s', [$condition], $parameters, StatementSection::HAVING()
+            );
+        }
 
         $this->sectionMap->appendSectionTo(StatementSection::HAVING(), new SectionWithinParenthesis($section), ' AND ');
 
@@ -64,9 +85,13 @@ final class ParserBackedQueryBuilder implements QueryBuilder
 
     public function having(string $condition, ...$parameters): QueryBuilder
     {
-        $section = $this->resolveSection(
-            'SELECT 1 HAVING %s', [$condition], $parameters, StatementSection::HAVING()
-        );
+        if ($this->shouldSkipParsing($condition, $parameters)) {
+            $section = new StaticSection($condition);
+        } else {
+            $section = $this->resolveSection(
+                'SELECT 1 HAVING %s', [$condition], $parameters, StatementSection::HAVING()
+            );
+        }
 
         $this->sectionMap->setSectionFor(StatementSection::HAVING(), $section);
 
@@ -86,9 +111,13 @@ final class ParserBackedQueryBuilder implements QueryBuilder
 
     public function groupBy(string $groupBy, ...$parameters): QueryBuilder
     {
-        $section = $this->resolveSection(
-            'SELECT 1 GROUP BY %s', [$groupBy], $parameters, StatementSection::GROUP_BY()
-        );
+        if ($this->shouldSkipParsing($groupBy, $parameters)) {
+            $section = new StaticSection($groupBy);
+        } else {
+            $section = $this->resolveSection(
+                'SELECT 1 GROUP BY %s', [$groupBy], $parameters, StatementSection::GROUP_BY()
+            );
+        }
 
         $this->sectionMap->setSectionFor(StatementSection::GROUP_BY(), $section);
 
@@ -97,31 +126,43 @@ final class ParserBackedQueryBuilder implements QueryBuilder
 
     public function andGroupBy(string $groupBy, ...$parameters): QueryBuilder
     {
-        $section = $this->resolveSection(
-            'SELECT 1 GROUP BY %s', [$groupBy], $parameters, StatementSection::GROUP_BY()
-        );
+        if ($this->shouldSkipParsing($groupBy, $parameters)) {
+            $section = new StaticSection($groupBy);
+        } else {
+            $section = $this->resolveSection(
+                'SELECT 1 GROUP BY %s', [$groupBy], $parameters, StatementSection::GROUP_BY()
+            );
+        }
 
         $this->sectionMap->appendSectionTo(StatementSection::GROUP_BY(), $section, ', ');
 
         return $this;
     }
 
-    public function orderBy(string $groupBy, ...$parameters): QueryBuilder
+    public function orderBy(string $orderBy, ...$parameters): QueryBuilder
     {
-        $section = $this->resolveSection(
-            'SELECT 1 ORDER BY %s', [$groupBy], $parameters, StatementSection::ORDER_BY()
-        );
+        if ($this->shouldSkipParsing($orderBy, $parameters)) {
+            $section = new StaticSection($orderBy);
+        } else {
+            $section = $this->resolveSection(
+                'SELECT 1 ORDER BY %s', [$orderBy], $parameters, StatementSection::ORDER_BY()
+            );
+        }
 
         $this->sectionMap->setSectionFor(StatementSection::ORDER_BY(), $section);
 
         return $this;
     }
 
-    public function andOrderBy(string $groupBy, ...$parameters): QueryBuilder
+    public function andOrderBy(string $orderBy, ...$parameters): QueryBuilder
     {
-        $section = $this->resolveSection(
-            'SELECT 1 ORDER BY %s', [$groupBy], $parameters, StatementSection::ORDER_BY()
-        );
+        if ($this->shouldSkipParsing($orderBy, $parameters)) {
+            $section = new StaticSection($orderBy);
+        } else {
+            $section = $this->resolveSection(
+                'SELECT 1 ORDER BY %s', [$orderBy], $parameters, StatementSection::ORDER_BY()
+            );
+        }
 
         $this->sectionMap->appendSectionTo(StatementSection::ORDER_BY(), $section, ', ');
 
@@ -145,40 +186,44 @@ final class ParserBackedQueryBuilder implements QueryBuilder
 
     private function doJoin(string $join, array $parameters, ?string $type = null
     ): QueryBuilder {
-        $section = $this->resolveSection(
-            'SELECT 1 FROM t %s JOIN %s', [(string) $type, $join], $parameters,
-            StatementSection::TABLES()
-        );
+        if ($this->shouldSkipParsing($join, $parameters)) {
+            $section = new StaticSection(sprintf('  %s JOIN %s', (string) $type, $join));
+        } else {
+            $section = $this->resolveSection(
+                'SELECT 1 FROM t %s JOIN %s', [(string) $type, $join], $parameters,
+                StatementSection::TABLES()
+            );
 
-        /*
-         * Instead of removing "t" from the "FROM" part and then adjusting all of the
-         * placeholders, "t" is just replaced by the white space
-         */
-        $section = new class($section) implements Section {
-
-            /**
-             * @var Section
+            /*
+             * Instead of removing "t" from the "FROM" part and then adjusting all of the
+             * placeholders, "t" is just replaced by the white space
              */
-            private Section $section;
+            $section = new class($section) implements Section {
 
-            public function __construct(Section $section)
-            {
-                $this->section = $section;
-            }
+                /**
+                 * @var Section
+                 */
+                private Section $section;
 
-            public function chunk(): string
-            {
-                $chunk = $this->section->chunk();
-                $chunk[0] = ' ';
+                public function __construct(Section $section)
+                {
+                    $this->section = $section;
+                }
 
-                return $chunk;
-            }
+                public function chunk(): string
+                {
+                    $chunk = $this->section->chunk();
+                    $chunk[0] = ' ';
 
-            public function markers(): Sequence
-            {
-                return $this->section->markers();
-            }
-        };
+                    return $chunk;
+                }
+
+                public function markers(): Sequence
+                {
+                    return $this->section->markers();
+                }
+            };
+        }
 
         $this->sectionMap->appendSectionTo(StatementSection::TABLES(), $section, '');
 
