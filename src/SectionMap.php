@@ -101,7 +101,7 @@ final class SectionMap
             $chunk = $section->chunk();
             $placeHolderOffset = 0;
             foreach ($section->markers() as [$parameter, $placeholderPosition]) {
-                if (!$parameter instanceof Query) {
+                if (!$parameter instanceof InlineValue) {
                     continue;
                 }
 
@@ -150,7 +150,7 @@ final class SectionMap
 
             $ret = $section->markers()->map(fn(array $parameter) => $parameter[0])->reduce(
                 function (Sequence $all, $parameter): Sequence {
-                    if ($parameter instanceof Query) {
+                    if ($parameter instanceof InlineValue) {
                         foreach ($parameter->parameters() as $param) {
                             $all->push($param);
                         }

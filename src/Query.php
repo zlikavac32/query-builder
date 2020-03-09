@@ -7,7 +7,7 @@ namespace Zlikavac32\QueryBuilder;
 use Ds\Sequence;
 use Ds\Vector;
 
-final class Query
+final class Query implements InlineValue
 {
 
     private string $sql;
