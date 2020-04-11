@@ -24,7 +24,7 @@
     "require": {
         "php": "^7.4",
         "ext-ffi": "*",
-        "zlikavac32/php-enum": "^2.0",
+        "zlikavac32/php-enum": "^3.0",
         "php-ds/php-ds": "^1.2"
     },
     "require-dev": {
