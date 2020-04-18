@@ -33,7 +33,7 @@ final class NonPreloadedFFIGateway implements FFIGateway
 
     public function parseResultFree(CData $parseResult): void
     {
-        $this->ffi->tsql_parse_result_free($parseResult);
+        $this->ffi->tsqlp_parse_result_free($parseResult);
     }
 
     public function parseStatusToMessage(int $parseStatus): string
