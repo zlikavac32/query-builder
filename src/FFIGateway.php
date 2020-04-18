@@ -20,4 +20,6 @@ interface FFIGateway
     public function parseResultFree(CData $parseResult): void;
 
     public function apiVersion(): int;
+
+    // @todo: support other functions to access data structures instead of the manual access
 }
